@@ -92,3 +92,67 @@ class App extends Component {
 }
 
 export default App;
+
+<~2019.05.13 promises사용까지의 App.js>
+import React, {Component} from 'react';
+import './App.css';
+import Movie from './Movie'
+
+//CRA사용 : 해당프로젝트의 위치에서 커맨드창열기 > yarn start > localhost:3000
+
+//모든 데이터는 메인 컴포넌트에 있음
+//부모 컴포넌트에서 자식 컴포넌트로 데이터 전달=props
+
+
+//자바스크립트 안에 html코드 => jsx:react component를 만들때 사용하는 언어
+//css-class = jsx-className
+//모든 컴포넌트는 render function을 가지고있음
+//render:이 컴포넌트가 나에게 보여주는 것이 무엇인가
+class App extends Component {
+  /*
+  <Compoent의 Lifecycle>
+  # Render: componentWillMount() -> render() -> componentDidMount()
+  will mount(사이클 시작), render(컴포넌트가 존재), did mount(컴포넌트가 자리잡음)는 component가 존재하기 시작할때 작동
+
+  # Update: componentWillReceiveProps() -> shouldComponentUpdate() -> componentWillUpdate() -> render() -> componentDidUpdate()
+  shouldComponentUpdate(): 이전props과 새로운 props가 다르면 true
+  shouldComponentUpdate()==true로 사용
+
+  사용예시: willUpdate()때 spinner(로딩중표시)를 붙이고 업데이트 이후 didUpdate()에서 spiner(메세지나 아이콘)를 숨김 
+  */
+
+  //state: Component안의 Object
+  //state가 바뀔 때마다 render이 발생
+  state = {
+    //state..는 디폴트 state와 함께 컴포넌트를 로드하는 방법
+    //변경은 setState로 함
+    
+  }
+
+  componentDidMount(){
+    //최신 자바스크립트에서는 fetch()를 이용해 비동기방식으로 url을 불러올 수 있음(React에서 AJAX의 사용)
+    //AJAX를 사용하면 페이지를 가져오고 싶을 때마다 새로고침할 필요가 없고 React와의 작업이 간편함
+    //fetch를 여러개 쓰면 맨 위의 실행이 끝나야 다음 fetch가 진행됨=>비효율적=>promise를 사용
+    fetch('https://yts.am/api/v2/list_movies.json?sort_by=rating')
+    .then(response => response.json()) //then()는 fetch의 결과를 object로 갖는다
+    .then(json => console.log(json))
+    .catch(err => console.log(err))
+  }
+
+  _renderMovies = () => {
+    const movies = this.state.movies.map((movie, index) => {
+      return <Movie title={movie.title} poster={movie.poster} key={index} />
+    })
+    return movies
+  }
+
+  render() {
+    return(
+      <div className="App"> 
+        {this.state.movies ? this._renderMovies() : 'Loading'}
+    </div>
+    );
+  }
+}
+
+export default App;

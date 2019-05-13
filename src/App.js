@@ -34,43 +34,37 @@ class App extends Component {
   }
 
   componentDidMount(){
-    //setTimeout(function(){...}, 1000)-> old javascript
-    //setTimeout(()=>{}, 1000)-> new javascript
-    setTimeout(() => {
-      //this.state.greeting = 'something' (X) state를 직접적으로 변경하면 render설정들이 작용하지 않음!
-      this.setState({
-        movies: [
-          {
-            title : "Marix",
-            poster : "https://s3-ap-southeast-2.amazonaws.com/fna-wordpress-website06/wp-content/uploads/2018/09/05151327/Matrix-The-960x1440.jpg"
-          },
-          {
-            title : "Full Metal Jacket",
-            poster : "https://cdn.shopify.com/s/files/1/0784/1125/products/Full_Metal_Jacket_1024x.jpg?v=1530145558"   
-          },
-          {
-            title : "Oldboy",
-            poster : "https://upload.wikimedia.org/wikipedia/en/6/67/Oldboykoreanposter.jpg"
-          },
-          {
-            title : "Star Wars",
-            poster : "https://lumiere-a.akamaihd.net/v1/images/uk_sws-9_teaser-poster_r_b34b20e7.jpeg?region=0,0,960,1420"
-          },
-          { 
-            title: "Trainspotting",
-            poster: "https://affif-sitepublic-media-prod.s3.amazonaws.com/film_poster/0001/57/thumb_56478_film_poster_293x397.jpeg"
-          }
-        ]
-      })
-    }, 5000)
-  
+    this._getMovies();
   }
 
   _renderMovies = () => {
-    const movies = this.state.movies.map((movie, index) => {
-      return <Movie title={movie.title} poster={movie.poster} key={index} />
+    //Component의 key는 인덱스를 사용하면 속도가 느려서 좋지 않음
+    const movies = this.state.movies.map((movie) => {
+      console.log(movie)
+      return <Movie 
+      title={movie.title_english}
+      poster={movie.medium_cover_image}
+      key={movie.id}
+      genres={movie.genres}
+      synopsis={movie.synopsis}
+      />
     })
     return movies
+  }
+
+  _getMovies = async () => {
+    //return value에 상관없이 _callApi()가 '끝나는것'을 기다림 
+    const movies = await this._callApi()
+    this.setState({
+      movies
+    })
+  }
+
+  _callApi = () => {
+    return fetch('https://yts.am/api/v2/list_movies.json?sort_by=rating')
+    .then(response => response.json())
+    .then(json => json.data.movies)
+    .catch(err => console.log(err))
   }
 
   render() {
