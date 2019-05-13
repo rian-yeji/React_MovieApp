@@ -1,3 +1,4 @@
+<~2109.05.13 setState까지의 App.js>
 import React, {Component} from 'react';
 import './App.css';
 import Movie from './Movie'
@@ -30,7 +31,25 @@ class App extends Component {
   state = {
     //state..는 디폴트 state와 함께 컴포넌트를 로드하는 방법
     //변경은 setState로 함
-    
+    greeting: 'Hello!',
+    movies: [
+      {
+        title : "Marix",
+        poster : "https://s3-ap-southeast-2.amazonaws.com/fna-wordpress-website06/wp-content/uploads/2018/09/05151327/Matrix-The-960x1440.jpg"
+      },
+      {
+        title : "Full Metal Jacket",
+        poster : "https://cdn.shopify.com/s/files/1/0784/1125/products/Full_Metal_Jacket_1024x.jpg?v=1530145558"   
+      },
+      {
+        title : "Oldboy",
+        poster : "https://upload.wikimedia.org/wikipedia/en/6/67/Oldboykoreanposter.jpg"
+      },
+      {
+        title : "Star Wars",
+        poster : "https://lumiere-a.akamaihd.net/v1/images/uk_sws-9_teaser-poster_r_b34b20e7.jpeg?region=0,0,960,1420"
+      }
+    ]
   }
 
   componentDidMount(){
@@ -40,43 +59,33 @@ class App extends Component {
       //this.state.greeting = 'something' (X) state를 직접적으로 변경하면 render설정들이 작용하지 않음!
       this.setState({
         movies: [
-          {
-            title : "Marix",
-            poster : "https://s3-ap-southeast-2.amazonaws.com/fna-wordpress-website06/wp-content/uploads/2018/09/05151327/Matrix-The-960x1440.jpg"
-          },
-          {
-            title : "Full Metal Jacket",
-            poster : "https://cdn.shopify.com/s/files/1/0784/1125/products/Full_Metal_Jacket_1024x.jpg?v=1530145558"   
-          },
-          {
-            title : "Oldboy",
-            poster : "https://upload.wikimedia.org/wikipedia/en/6/67/Oldboykoreanposter.jpg"
-          },
-          {
-            title : "Star Wars",
-            poster : "https://lumiere-a.akamaihd.net/v1/images/uk_sws-9_teaser-poster_r_b34b20e7.jpeg?region=0,0,960,1420"
-          },
-          { 
+          ...this.state.movies, //이 코드가 없으면 기존 영화목록이 삭제되고 아래의 한개만 남음
+          { //이전 리스트를 그대로두고 한개의 영화를 추가
+            //이 방식으로 infinite scroll을 구현
             title: "Trainspotting",
             poster: "https://affif-sitepublic-media-prod.s3.amazonaws.com/film_poster/0001/57/thumb_56478_film_poster_293x397.jpeg"
           }
+          //...this.state.movies 여기에 쓰면 새로 추가한게 맨위에보임.
         ]
       })
     }, 5000)
   
   }
 
-  _renderMovies = () => {
-    const movies = this.state.movies.map((movie, index) => {
-      return <Movie title={movie.title} poster={movie.poster} key={index} />
-    })
-    return movies
-  }
-
   render() {
     return(
-      <div className="App"> 
-        {this.state.movies ? this._renderMovies() : 'Loading'}
+      <div className="App">
+        {this.state.movies.map((movie,index) => { 
+          //movie:현재 사이클의 엘리먼트, index:현재 제공하는 리스트의 숫자
+          return <Movie title={movie.title} poster={movie.poster} key={index} />
+          /*위의 맵핑은 아래의 과정과 같음
+          {[
+            <Movie title={movies[0].title} poster={movies[0].poster} />
+            <Movie title={movies[1].title} poster={movies[1].poster} />
+            <Movie title={movies[2].title} poster={movies[2].poster} />
+            <Movie title={movies[3].title} poster={movies[3].poster} />
+          ]}*/
+          })}
     </div>
     );
   }
